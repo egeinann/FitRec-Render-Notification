@@ -2,12 +2,17 @@ import express from "express";
 import admin from "firebase-admin";
 
 const app = express();
-const serviceAccount = JSON.parse(process.env.FIREBASE_KEY_JSON);
 
+// 🔐 Base64 olarak gelen JSON'u decode ediyoruz
+const decoded = Buffer.from(process.env.FIREBASE_KEY_B64, "base64").toString("utf8");
+const serviceAccount = JSON.parse(decoded);
+
+// 🔥 Firebase Admin'i başlat
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
+// 🌍 Dile göre mesajlar
 const messages = {
   tr: { title: "Hatırlatma!", body: "Kilonu kaydet ve serini devam ettir!" },
   fr: { title: "Rappel !", body: "Enregistre ton poids et continue ta série !" },
@@ -21,6 +26,7 @@ const messages = {
   es: { title: "¡Recordatorio!", body: "¡Registra tu peso y continúa tu racha!" }
 };
 
+// 🛠 Bildirim gönderme endpoint'i
 app.get("/send", async (req, res) => {
   try {
     const results = [];
@@ -41,5 +47,6 @@ app.get("/send", async (req, res) => {
   }
 });
 
+// 🌐 Sunucu başlatılıyor
 const port = process.env.PORT || 10000;
 app.listen(port, () => console.log("Sunucu aktif, port: " + port));
