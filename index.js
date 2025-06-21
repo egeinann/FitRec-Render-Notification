@@ -9,7 +9,7 @@ admin.initializeApp({
 });
 
 const messages = {
-  tr: { title: "Hatırlatma!", body: "Kilonu kaydet ve serini devam ettir" },
+  tr: { title: "Hatırlatma!", body: "Kilonu kaydet ve serini devam ettir!" },
   fr: { title: "Rappel !", body: "Enregistre ton poids et continue ta série !" },
   en: { title: "Reminder!", body: "Log your weight and continue your streak." },
   ko: { title: "알림!", body: "몸무게를 기록하고 연속 기록을 이어가세요!" },
