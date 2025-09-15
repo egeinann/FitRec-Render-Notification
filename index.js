@@ -14,31 +14,41 @@ admin.initializeApp({
 
 // 🌍 Dile göre mesajlar
 const messages = {
-  tr: { title: "Hatırlatma!", body: "Kilonu kaydet ve serini devam ettir!" },
-  fr: { title: "Rappel !", body: "Enregistre ton poids et continue ta série !" },
+  tr: { title: "Hatırlatma!", body: "Kilonu kaydet ve serini devam ettir." },
+  fr: { title: "Rappel !", body: "Enregistre ton poids et continue ta série ." },
   en: { title: "Reminder!", body: "Log your weight and continue your streak." },
-  ko: { title: "알림!", body: "몸무게를 기록하고 연속 기록을 이어가세요!" },
-  ja: { title: "リマインダー！", body: "体重を記録して連続記録を続けましょう！" },
-  ru: { title: "Напоминание!", body: "Запишите свой вес и продолжайте серию!" },
-  zh: { title: "提醒！", body: "记录你的体重，继续坚持！" },
-  pt: { title: "Lembrete!", body: "Registre seu peso e continue sua sequência!" },
-  de: { title: "Erinnerung!", body: "Trage dein Gewicht ein und setze deine Serie fort!" },
-  es: { title: "¡Recordatorio!", body: "¡Registra tu peso y continúa tu racha!" }
+  ko: { title: "알림!", body: "몸무게를 기록하고 연속 기록을 이어가세요." },
+  ja: { title: "リマインダー！", body: "体重を記録して連続記録を続けましょう." },
+  ru: { title: "Напоминание!", body: "Запишите свой вес и продолжайте серию." },
+  zh: { title: "提醒！", body: "记录你的体重，继续坚持." },
+  pt: { title: "Lembrete!", body: "Registre seu peso e continue sua sequência." },
+  de: { title: "Erinnerung!", body: "Trage dein Gewicht ein und setze deine Serie fort." },
+  es: { title: "¡Recordatorio!", body: "¡Registra tu peso y continúa tu racha." }
 };
 
 // 🛠 Bildirim gönderme endpoint'i
 app.get("/send", async (req, res) => {
   try {
+    const { lang } = req.query; // opsiyonel: sadece belirli dil için göndermek istersek
+
+    if (lang && !messages[lang]) {
+      return res.status(400).send("Invalid language code");
+    }
+
+    const langsToSend = lang ? [lang] : Object.keys(messages);
     const results = [];
-    for (const [lang, msg] of Object.entries(messages)) {
+
+    for (const l of langsToSend) {
+      const msg = messages[l];
+      // Her topic'e sadece bir kez gönderim
       const response = await admin.messaging().send({
-        topic: `lang_${lang}`,
+        topic: `lang_${l}`,
         notification: {
           title: msg.title,
           body: msg.body,
         },
       });
-      results.push({ lang, response });
+      results.push({ lang: l, response });
     }
 
     res.send(results);
